@@ -1,0 +1,21 @@
+{
+    "workflow_name": "test_pipeline",
+    "containers": [
+        {
+            "id": "step1",
+            "name": "Step One",
+            "command": "echo step1",
+            "input_file": "",
+            "output_file": "",
+            "depends_on": []
+        },
+        {
+            "id": "step2",
+            "name": "Step Two",
+            "command": "echo step2",
+            "input_file": "",
+            "output_file": "",
+            "depends_on": ["step1"]
+        }
+    ]
+}
