@@ -32,3 +32,27 @@
 - This confirmed successful parsing of the workflow JSON.
 - Verified that volumes, parser, and config JSON integration work as expected.
 - Ready to proceed with integrating the parser into the main orchestrator entrypoint.
+
+## Stage 2: Execution Engine Test
+
+- Implemented `execute_workflow()` in `executor.py` to execute Docker commands from the workflow config.
+- Updated `main.py` to load the config and call the execution engine.
+- Ran the test using:
+  ```bash
+  docker-compose run --rm orchestrator python main.py
+  ```
+- Output of the above command:
+  ```
+  WARN[0000] /home/gun/ai-effect-wp3.2-orchestrator/docker/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+  Running: docker run energy-generator
+  Unable to find image 'energy-generator:latest' locally
+  docker: Error response from daemon: pull access denied for energy-generator, repository does not exist or may require 'docker login'.
+  See 'docker run --help'.
+  Error: Command failed: docker run energy-generator
+  ```
+
+- This confirms:
+    - The execution engine reads and runs commands in order.
+    - The engine waits for each to finish.
+    - Basic error handling works—on missing images, the error is reported and execution stops.
+
