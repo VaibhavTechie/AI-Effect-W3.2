@@ -61,3 +61,33 @@ All issues were resolved. The orchestrator container now:
 - Builds successfully with Docker and Compose
 - Executes `main.py` from the mounted volume
 - Is ready for the next development stage (workflow execution, testing, and integration)
+
+---
+
+### Issue 5: `FileNotFoundError: /data/energy_data.csv`
+
+- **Summary:** When running the orchestrator from WP3.2, the generator container failed due to missing input file.
+- **Root Cause:** The orchestrator runs containers with `docker run` that expect volume-mounted files in `/data/`, but the mount path was missing.
+- **Resolution:**
+  - Updated the `config/energy-pipeline.json` to inject absolute volume paths into the `command` field:
+    ```json
+    "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-generator"
+    ```
+  - Applied same for analyzer and report-generator.
+  - Ensured `data/energy_data.csv` was generated beforehand.
+
+---
+
+### Issue 6: Output files not found during orchestrator execution
+
+- **Summary:** Analyzer and report-generator containers failed because their expected input files (`output1.json`, `output2.json`) were missing.
+- **Root Cause:** Volumes were mounted but generator had failed earlier due to CSV file not found, resulting in empty pipeline flow.
+- **Resolution:**
+  - Verified file presence in `/data/`
+  - Manually tested each container using:
+    ```bash
+    docker run --rm -v "$PWD/data:/data" <container-name>
+    ```
+  - Confirmed successful handoff and updated orchestrator mount paths.
+
+

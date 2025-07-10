@@ -4,7 +4,7 @@
     {
       "id": "energy-generator",
       "name": "Energy Data Generator",
-      "command": "docker run energy-generator",
+      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-generator",
       "input_file": "energy_data.csv",
       "output_file": "output1.json",
       "depends_on": []
@@ -12,7 +12,7 @@
     {
       "id": "energy-analyzer",
       "name": "Energy Data Analyzer",
-      "command": "docker run energy-analyzer",
+      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-analyzer",
       "input_file": "output1.json",
       "output_file": "output2.json",
       "depends_on": ["energy-generator"]
@@ -20,7 +20,7 @@
     {
       "id": "report-generator",
       "name": "Report Generator",
-      "command": "docker run report-generator",
+      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-report-generator",
       "input_file": "output2.json",
       "output_file": "energy_report.csv",
       "depends_on": ["energy-analyzer"]

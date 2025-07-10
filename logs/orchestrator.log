@@ -1,0 +1,98 @@
+2025-07-10 11:40:09,819 - INFO - Starting container: energy-generator
+2025-07-10 11:40:09,819 - INFO - Command: docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-generator
+2025-07-10 11:40:10,384 - INFO - energy-generator STDOUT:
+Container 1: Generated 10 records.
+
+2025-07-10 11:40:10,384 - INFO - Starting container: energy-analyzer
+2025-07-10 11:40:10,384 - INFO - Command: docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-analyzer
+2025-07-10 11:40:10,885 - INFO - energy-analyzer STDOUT:
+[
+  {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "household_id": "H003",
+    "power": 2.04,
+    "efficiency": 0.135,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:31:00Z",
+    "household_id": "H003",
+    "power": 4.07,
+    "efficiency": 0.213,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:32:00Z",
+    "household_id": "H002",
+    "power": 2.92,
+    "efficiency": 0.122,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:33:00Z",
+    "household_id": "H001",
+    "power": 3.76,
+    "efficiency": 0.308,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:34:00Z",
+    "household_id": "H001",
+    "power": 3.17,
+    "efficiency": 0.24,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:35:00Z",
+    "household_id": "H002",
+    "power": 4.76,
+    "efficiency": 0.381,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:36:00Z",
+    "household_id": "H001",
+    "power": 2.09,
+    "efficiency": 0.097,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:37:00Z",
+    "household_id": "H002",
+    "power": 4.57,
+    "efficiency": 0.321,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:38:00Z",
+    "household_id": "H003",
+    "power": 2.84,
+    "efficiency": 0.212,
+    "status": "normal",
+    "anomaly_detected": false
+  },
+  {
+    "timestamp": "2024-01-15T10:39:00Z",
+    "household_id": "H002",
+    "power": 4.57,
+    "efficiency": 0.241,
+    "status": "normal",
+    "anomaly_detected": false
+  }
+]
+Container 2: Processed 10 records, and Skipped 0 invalid rows
+
+2025-07-10 11:40:10,886 - INFO - Starting container: report-generator
+2025-07-10 11:40:10,886 - INFO - Command: docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-report-generator
+2025-07-10 11:40:11,455 - INFO - report-generator STDOUT:
+ Container 3: Report generated with 10 records.
+
+2025-07-10 11:40:11,455 - INFO - All containers executed.
