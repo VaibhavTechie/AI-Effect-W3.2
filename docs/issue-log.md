@@ -90,4 +90,83 @@ All issues were resolved. The orchestrator container now:
     ```
   - Confirmed successful handoff and updated orchestrator mount paths.
 
+---
+
+### Issue 7: `ModuleNotFoundError: No module named 'proto'`
+
+- **Summary:** Attempting to run `dummy_grpc_server.py` failed because Python couldn’t locate the `proto` package.
+- **Root Cause:** The project root was not included in the Python import path.
+- **Resolution:**
+  - Prepended the root directory to `sys.path` at the top of `dummy_grpc_server.py`:
+    ```python
+    import sys, os
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+    ```
+
+---
+
+### Issue 8: `ImportError: cannot import name 'energy_pipeline_pb2' from 'proto'`
+
+- **Summary:** Even after adjusting import paths, Python raised an import error from `proto/__init__.py`.
+- **Root Cause:** The `energy_pipeline_pb2_grpc.py` used a relative import that expected `energy_pipeline_pb2` to be a sibling module.
+- **Resolution:**
+  - Modified `energy_pipeline_pb2` generated file to use relative imports:
+    ```python
+    # in energy_pipeline_pb2_grpc.py
+    from . import energy_pipeline_pb2 as energy__pipeline__pb2
+    ```
+
+---
+
+### Issue 9: gRPC proto generation targeting wrong folder
+
+- **Summary:** Initial compilation of `.proto` placed generated files in `src/orchestrator/` instead of `proto/`.
+- **Resolution:**
+  - Regenerated files using:
+    ```bash
+    python3 -m grpc_tools.protoc \
+      --proto_path=proto \
+      --python_out=proto \
+      --grpc_python_out=proto \
+      proto/energy_pipeline.proto
+    ```
+  - Verified files appeared in `proto/` and updated all imports in client/server files.
+
+---
+
+### Issue 10: Dummy gRPC server not connecting to protobuf modules
+
+- **Summary:** Running `dummy_grpc_server.py` still failed with:
+  `ModuleNotFoundError: No module named 'energy_pipeline_pb2'`
+- **Root Cause:** Generated code was not using relative imports, and Python couldn't resolve them in nested directories.
+- **Resolution:**
+  - Manually edited:
+    - `energy_pipeline_pb2_grpc.py`
+    - `energy_pipeline_pb2.py`
+  - Ensured all relative imports used dot notation from `proto`:
+    ```python
+    from . import energy_pipeline_pb2
+    ```
+
+---
+
+### Issue 11: `.venv` files mistakenly added to Git
+
+- **Summary:** Executing `git add .` included the virtual environment directory.
+- **Resolution:**
+  - Updated `.gitignore` to include:
+    ```
+    .venv/
+    ```
+  - Removed all staged `.venv` files:
+    ```bash
+    git reset
+    git rm -r --cached .venv/
+    ```
+
+---
+
+### Outcome
+
+All gRPC-related issues were successfully resolved. Dummy server now launches cleanly and is ready for testing with the gRPC-enabled orchestrator (`grpc_main.py`). Imports are stable, and `.proto` compilation is fully automated and reproducible.
 

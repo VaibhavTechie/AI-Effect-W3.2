@@ -222,3 +222,80 @@ To verify that the WP3.2 orchestrator can execute and control the WP3.1 containe
 - Pipeline completes from within WP3.2 context, even though containers belong to 3.1.
 - No refactor needed inside container logic; orchestration driven via JSON `command` field.
 
+---
+
+## Stage 4 – gRPC-Based Orchestrator Setup (Iteration 2)
+
+### Objective:
+Introduce a parallel orchestrator logic using gRPC to execute containers, without altering the legacy `main.py` logic.
+
+### Setup:
+- Created new `energy_pipeline.proto` definition in `proto/`:
+  ```proto
+  syntax = "proto3";
+
+  service ContainerExecutor {
+    rpc Execute(ExecuteRequest) returns (ExecuteResponse);
+  }
+
+  message ExecuteRequest {
+    string input_file = 1;
+    string output_file = 2;
+  }
+
+  message ExecuteResponse {
+    bool success = 1;
+    string message = 2;
+  }
+  ```
+
+- Compiled `.proto` using `grpcio-tools`:
+  ```bash
+  python3 -m grpc_tools.protoc \
+    --proto_path=proto \
+    --python_out=proto \
+    --grpc_python_out=proto \
+    proto/energy_pipeline.proto
+  ```
+
+- Generated:
+  - `proto/energy_pipeline_pb2.py`
+  - `proto/energy_pipeline_pb2_grpc.py`
+
+### New Files Created:
+- `src/orchestrator/grpc_executor.py`:
+  - Parses container list
+  - Sends `ExecuteRequest` via gRPC
+  - Logs success/failure for each container
+
+- `src/orchestrator/grpc_main.py`:
+  - Alternate entry point to orchestrate using gRPC
+  - Uses same config as legacy orchestrator
+
+- `src/orchestrator/dummy_grpc_server.py`:
+  - Simulates container execution logic
+  - Reads input/output file paths, writes dummy output
+
+### Testing:
+- Resolved import issues caused by generated `pb2` modules:
+  - Added `__init__.py` to `proto/`
+  - Updated imports to use:
+    ```python
+    from proto import energy_pipeline_pb2, energy_pipeline_pb2_grpc
+    ```
+
+- Verified dummy server runs:
+  ```bash
+  python3 src/orchestrator/dummy_grpc_server.py
+  ```
+  Output:
+  ```
+  [DUMMY SERVER] gRPC server running on port 50051
+  ```
+
+- Confirmed all gRPC scripts import successfully and connect to server
+
+### Next Steps:
+- Validate `grpc_main.py` against the running dummy server
+- Gradually adapt WP3.1 container logic to respond to gRPC calls
+- Include this progress in mentor meeting for Iteration 2 review

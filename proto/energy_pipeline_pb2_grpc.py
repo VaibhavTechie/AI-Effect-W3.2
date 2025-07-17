@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import energy_pipeline_pb2 as energy__pipeline__pb2
+from . import energy_pipeline_pb2 as energy__pipeline__pb2
 
 GRPC_GENERATED_VERSION = '1.73.1'
 GRPC_VERSION = grpc.__version__

@@ -116,4 +116,72 @@ Next step: Begin Iteration 2 with service-to-service orchestration using gRPC & 
 
 
 
-![Grpc Setup and Implementation](image-3.png)
+---
+
+## Iteration 2: gRPC-based Orchestration Setup
+
+### Objective:
+To refactor the WP3.2 orchestrator to use gRPC communication instead of subprocess-based `docker run` calls, enabling a more modular, service-driven architecture.
+
+### Actions Taken:
+- Defined a new `.proto` file `energy_pipeline.proto` under `proto/` directory with the following schema:
+  ```proto
+  syntax = "proto3";
+
+  service ContainerExecutor {
+    rpc Execute(ExecuteRequest) returns (ExecuteResponse);
+  }
+
+  message ExecuteRequest {
+    string input_file = 1;
+    string output_file = 2;
+  }
+
+  message ExecuteResponse {
+    bool success = 1;
+    string message = 2;
+  }
+  ```
+
+- Used `grpc_tools.protoc` to generate two Python modules:
+  - `energy_pipeline_pb2.py`
+  - `energy_pipeline_pb2_grpc.py`
+
+- Relocated both files into `proto/` and fixed imports using relative syntax (`from . import energy_pipeline_pb2`).
+
+- Implemented `grpc_executor.py` to replace the legacy `executor.py`:
+  - Establishes channel with `localhost:50051`
+  - Sends serialized request to remote service
+  - Logs all responses and errors
+
+- Implemented `dummy_grpc_server.py` to simulate a basic gRPC-compatible backend:
+  - Accepts request, validates file paths
+  - Returns a success/failure message for testing without running actual containers
+
+- Modified `grpc_main.py` to integrate config parsing and gRPC-driven container dispatch.
+
+- All gRPC orchestrator files were moved to `src/orchestrator/` while keeping proto definitions in `proto/`.
+
+### Outcome:
+- gRPC communication between orchestrator and dummy backend confirmed.
+- Correct logging and file path transfer observed.
+- The structure allows drop-in replacement of dummy server with actual container gRPC services in future iterations.
+
+---
+
+## Screenshots – Iteration 2
+
+- [x] gRPC Protobuf Structure Setup  
+  ![Grpc Setup and Implementation](image-3.png)
+
+- [x] Dummy gRPC Server Validation  
+  ![gRPC Dummy Server Test](image-4.png)
+
+---
+
+## Next Steps
+
+- Replace dummy backend with actual container-based gRPC handlers.
+- Run end-to-end tests by invoking real containers through gRPC interface.
+- Compare performance and logging between subprocess vs. gRPC execution.
+
