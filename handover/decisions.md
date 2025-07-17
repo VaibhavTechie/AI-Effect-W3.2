@@ -113,3 +113,7 @@ To confirm that the orchestrator in WP 3.2 correctly triggers WP 3.1 containers 
 This log summarizes the full integration and handover status of WP 3.2, including verification with WP 3.1 deliverables.
 
 Next step: Begin Iteration 2 with service-to-service orchestration using gRPC & async execution.
+
+
+
+![Grpc Setup and Implementation](image-3.png)
