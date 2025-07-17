@@ -1,7 +1,17 @@
-# .gitignore
+# Ignore Python virtual environment
 .venv/
+venv/
+ENV/
+
+# Python cache
 __pycache__/
-*.pyc
-*.log
-.logs/
-logs/
+*.py[cod]
+
+
+# VS Code & IDE configs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
