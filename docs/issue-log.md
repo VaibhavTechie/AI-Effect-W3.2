@@ -170,3 +170,47 @@ All issues were resolved. The orchestrator container now:
 
 All gRPC-related issues were successfully resolved. Dummy server now launches cleanly and is ready for testing with the gRPC-enabled orchestrator (`grpc_main.py`). Imports are stable, and `.proto` compilation is fully automated and reproducible.
 
+---
+
+### Issue 12: `OSError: [Errno 30] Read-only file system: '/logs'` on macOS
+
+- **Summary:** Running `grpc_main.py` failed due to attempt to create logs at `/logs`, which is not writable on macOS.
+- **Root Cause:** The default `LOG_DIR` was hardcoded as `/logs`, a system directory.
+- **Resolution:**
+  - Changed default `LOG_DIR` in `grpc_main.py` to `logs/` in local project root:
+    ```python
+    LOG_DIR = os.environ.get("LOG_DIR", "logs")
+    ```
+
+---
+
+### Issue 13: `Config file not found: /config/energy-pipeline.json` on fresh machine
+
+- **Summary:** gRPC orchestrator failed because `config/energy-pipeline.json` wasn't found.
+- **Root Cause:** The path was Docker-specific (`/config/`) and not valid on the host.
+- **Resolution:**
+  - Updated `grpc_main.py` to look for config at a relative path:
+    ```python
+    config = parse_config("config/energy-pipeline.json")
+    ```
+
+---
+
+### Issue 14: `ModuleNotFoundError: No module named 'grpc'`
+
+- **Summary:** Python raised an import error when attempting to run `grpc_main.py` after setting up the virtual environment.
+- **Resolution:**
+  - Installed `grpcio` and `grpcio-tools` in the `.venv`:
+    ```bash
+    pip install grpcio grpcio-tools
+    ```
+
+---
+
+### Outcome
+
+The gRPC orchestrator now runs fully on macOS:
+- Dummy server and gRPC pipeline tested successfully.
+- Logs are created in the project folder.
+- Local configuration works outside Docker.
+- Environment reproducible with proper setup instructions.

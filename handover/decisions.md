@@ -185,3 +185,33 @@ To refactor the WP3.2 orchestrator to use gRPC communication instead of subproce
 - Run end-to-end tests by invoking real containers through gRPC interface.
 - Compare performance and logging between subprocess vs. gRPC execution.
 
+---
+
+## gRPC Local Testing on macOS – July 12
+
+### Objective:
+Verify gRPC-based orchestrator behavior on a clean machine (macOS) using the dummy gRPC server.
+
+### Actions Taken:
+- Cloned the `AI-Effect-W3.2` repo onto a fresh macOS setup.
+- Installed required tools and Python dependencies.
+- Set up Python virtual environment and activated it.
+- Fixed path issues in `grpc_executor.py` and `grpc_main.py`.
+- Regenerated protobuf files using:
+  ```bash
+  python3 -m grpc_tools.protoc -Iproto --python_out=proto --grpc_python_out=proto proto/energy_pipeline.proto
+  ```
+- Successfully ran `dummy_grpc_server.py`.
+- Launched `grpc_main.py` and confirmed gRPC call flow for 3 containers using the dummy backend.
+- All logs showed expected results with correct request/response behavior.
+
+### Outcome:
+- Verified full orchestrator execution via gRPC on a non-Linux host.
+- Logging, protobuf, and client/server communication fully functional.
+
+### Screenshots:
+- [x] gRPC Dummy Client Execution  
+  ![gRPC Dummy Execution](image-5.png)
+
+- [x] gRPC Container Execution Simulated via Dummy Server  
+  ![gRPC Container Execution via Dummy Server](image-6.png)

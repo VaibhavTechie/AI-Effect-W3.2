@@ -96,3 +96,10 @@ Container 2: Processed 10 records, and Skipped 0 invalid rows
  Container 3: Report generated with 10 records.
 
 2025-07-10 11:40:11,455 - INFO - All containers executed.
+2025-07-25 16:40:00,081 - INFO - [gRPC] Executing energy-generator
+2025-07-25 16:40:00,086 - INFO - energy-generator succeeded: Dummy processed /data/energy_data.csv to /data/output1.json
+2025-07-25 16:40:00,086 - INFO - [gRPC] Executing energy-analyzer
+2025-07-25 16:40:00,086 - INFO - energy-analyzer succeeded: Dummy processed /data/output1.json to /data/output2.json
+2025-07-25 16:40:00,086 - INFO - [gRPC] Executing report-generator
+2025-07-25 16:40:00,086 - INFO - report-generator succeeded: Dummy processed /data/output2.json to /data/energy_report.csv
+2025-07-25 16:40:00,086 - INFO - gRPC pipeline completed.

@@ -299,3 +299,62 @@ Introduce a parallel orchestrator logic using gRPC to execute containers, withou
 - Validate `grpc_main.py` against the running dummy server
 - Gradually adapt WP3.1 container logic to respond to gRPC calls
 - Include this progress in mentor meeting for Iteration 2 review
+
+
+## Stage 4 – gRPC Integration Test on macOS (Cross-System Validation)
+
+### Objective:
+To validate the gRPC orchestrator and dummy server on a clean macOS machine using a virtual environment, outside Docker.
+
+### Setup & Steps:
+
+1. Cloned the `AI-Effect-W3.2` repository on macOS.
+
+2. Created a Python virtual environment and installed required packages:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install grpcio grpcio-tools
+   ```
+
+3. Verified project structure and ensured the following changes:
+   - `proto/` directory has an `__init__.py` file.
+   - All import statements for protobuf files use:
+     ```python
+     from proto import energy_pipeline_pb2, energy_pipeline_pb2_grpc
+     ```
+   - Added `sys.path.insert(0, os.path.abspath(...))` to Python files like `grpc_executor.py` and `dummy_grpc_server.py` to enable clean relative imports across directories.
+
+4. Started the dummy gRPC server:
+   ```bash
+   python3 src/orchestrator/dummy_grpc_server.py
+   ```
+   Output:
+   ```
+   [DUMMY SERVER] gRPC server running on port 50051
+   ```
+
+5. Ran the orchestrator client to test pipeline execution via gRPC:
+   ```bash
+   python3 src/orchestrator/grpc_main.py
+   ```
+   Output:
+   ```
+   [gRPC] Executing energy-generator -> energy_data.csv -> output1.json
+   energy-generator: Dummy processed /data/energy_data.csv to /data/output1.json
+   [gRPC] Executing energy-analyzer -> output1.json -> output2.json
+   energy-analyzer: Dummy processed /data/output1.json to /data/output2.json
+   [gRPC] Executing report-generator -> output2.json -> energy_report.csv
+   report-generator: Dummy processed /data/output2.json to /data/energy_report.csv
+   All containers executed via gRPC.
+   ```
+
+### Outcome:
+- gRPC orchestrator pipeline confirmed working on macOS using virtual environment.
+- Dummy server received and processed all 3 container stages correctly.
+- Imports, protobufs, and execution paths fully resolved outside Docker.
+
+### Next Steps:
+- Begin replacing dummy handler logic with real WP3.1 service implementations.
+- Enable containerized services to register and handle gRPC `ExecuteRequest`.
+- Transition orchestrator from subprocess-based control to gRPC-based orchestration.

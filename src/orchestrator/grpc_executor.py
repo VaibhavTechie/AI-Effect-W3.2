@@ -3,11 +3,14 @@
 import grpc
 import logging
 import os
+import sys
+
+# Add the root project directory to PYTHONPATH at runtime
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from proto import energy_pipeline_pb2, energy_pipeline_pb2_grpc
 
 def execute_workflow(containers, server_address="localhost:50051"):
-    # Setup gRPC channel
     with grpc.insecure_channel(server_address) as channel:
         stub = energy_pipeline_pb2_grpc.ContainerExecutorStub(channel)
 
@@ -19,7 +22,6 @@ def execute_workflow(containers, server_address="localhost:50051"):
             logging.info(f"[gRPC] Executing {container_id}")
             print(f"[gRPC] Executing {container_id} -> {input_file} -> {output_file}")
 
-            # Build gRPC request
             request = energy_pipeline_pb2.ExecuteRequest(
                 input_file=f"/data/{input_file}",
                 output_file=f"/data/{output_file}"
