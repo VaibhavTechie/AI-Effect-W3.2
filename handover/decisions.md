@@ -215,3 +215,68 @@ Verify gRPC-based orchestrator behavior on a clean machine (macOS) using the dum
 
 - [x] gRPC Container Execution Simulated via Dummy Server  
   ![gRPC Container Execution via Dummy Server](image-6.png)
+
+## Critical Fixes – Phase 2 Week 1
+
+### Decision: Fail-Fast Over Silent Recovery
+
+We decided to fail early when configuration or container setup is invalid rather than silently applying default or fallback logic.
+
+This avoids:
+- Hidden bugs caused by silently patched configuration
+- Assumptions around paths (e.g., `/data`) being hardcoded
+- Poor debugging experience later in testing or production
+
+---
+
+### Fix 1: Removed volume-mount auto-patching in `executor.py`
+
+**Old behavior**:
+- If container command didn’t have a `-v` volume mount, the code injected it automatically
+
+**New behavior**:
+- Raises `ValueError` if volume mount is missing, enforcing correct JSON config structure
+
+Before:  
+![executor.py before](image-7.png)
+
+After:  
+![executor.py after applying fix 1 and 2](image-8.png)
+
+---
+
+### Fix 2: Execution flow updated to respect `next_node` instead of list order
+
+**Old behavior**:
+- Iterated over containers in list order, ignoring dependencies
+
+**New behavior**:
+- Traverses from `start_node` using `next_node` links
+- Prevents incorrect execution order and adds cycle detection
+
+After Fix 3:  
+![executor.py after fix 3](image-9.png)
+
+---
+
+### Fix 3: Replaced hardcoded gRPC paths with config-passed paths
+
+**Old**:
+- gRPC request always sent `/data/<file>` for input/output
+
+**New**:
+- gRPC now accepts full paths from `input_file` and `output_file` fields in the config
+
+---
+
+### Fix 4: Applied logging and import fixes in `grpc_main.py`
+
+- Ensured graceful handling of missing config paths
+- Clean logging setup using `LOG_DIR` env var
+- Removed assumptions about default working dir
+
+Before:  
+![groc main before fix](image-10.png)
+
+After:  
+![grpc main after fix 4](image-11.png)

@@ -358,3 +358,55 @@ To validate the gRPC orchestrator and dummy server on a clean macOS machine usin
 - Begin replacing dummy handler logic with real WP3.1 service implementations.
 - Enable containerized services to register and handle gRPC `ExecuteRequest`.
 - Transition orchestrator from subprocess-based control to gRPC-based orchestration.
+
+---
+
+## Stage 5 – Phase 2 Week 1: Critical Fixes and Stability Improvements
+
+### Objective:
+Implement foundational code fixes as outlined by the mentor for improving orchestrator reliability, configuration enforcement, and execution accuracy.
+
+### Fixes Applied:
+
+#### Fix 1: Mandatory Volume Mounts
+
+- Removed auto-injection of `-v` volume mounts in `executor.py`.
+- Added validation to ensure every container command includes explicit volume bindings.
+- Error raised early if missing to enforce clean config and catch misconfigurations.
+
+---
+
+#### Fix 2: Execution Order via `next_node`
+
+- Refactored `execute_workflow()` logic in `executor.py` to walk through containers using the `next_node` chain starting from `start_node`.
+- Prevented errors from out-of-order execution and improved fault tolerance.
+- Added cycle detection to catch infinite loops in workflow definitions.
+
+---
+
+#### Fix 3: Path Injection Removed in gRPC Requests
+
+- Updated `grpc_executor.py` to no longer hardcode `/data/` prefix.
+- Orchestrator now sends input/output paths directly from config file.
+- This allows gRPC services full flexibility to resolve paths inside their container environment.
+
+---
+
+#### Fix 4: Logging and Startup Cleanups in gRPC Entry Point
+
+- Cleaned up `grpc_main.py`:
+  - Added safe logging to `logs/orchestrator.log`.
+  - Ensured missing config paths or invalid files raise early errors.
+  - Removed hardcoded fallback behavior for better debugging.
+
+---
+
+### Outcome:
+- All foundational issues identified in Phase 1 have been resolved.
+- Execution flow, logging, and configuration parsing are now robust and production-ready.
+- gRPC orchestration is now cleanly separated from dummy logic and subprocess fallbacks.
+
+### Next Steps:
+- Await real gRPC container services from WP3.1 to replace the dummy server.
+- Prepare orchestrator to dynamically detect and invoke available services.
+- Document integration requirements and prepare test cases for gRPC-connected container pipelines.
