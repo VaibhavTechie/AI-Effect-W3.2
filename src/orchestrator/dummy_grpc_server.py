@@ -1,38 +1,36 @@
 # src/orchestrator/dummy_grpc_server.py
+import time
+from concurrent import futures
 
 import grpc
-from concurrent import futures
-import time
-import logging
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from proto import energy_pipeline_pb2, energy_pipeline_pb2_grpc
+from src import energy_pipeline_pb2, energy_pipeline_pb2_grpc
+from .logging_config import setup_logging
+
+# JSON logger → stdout + logs/execution_log.log
+log = setup_logging("orchestrator-grpc-server")
 
 
-class DummyExecutorServicer(energy_pipeline_pb2_grpc.ContainerExecutorServicer):
+class DummyExecutor(energy_pipeline_pb2_grpc.ContainerExecutorServicer):
     def Execute(self, request, context):
-        logging.info(f"Received ExecuteRequest: {request.input_file} -> {request.output_file}")
-        print(f"[DUMMY SERVER] Processing {request.input_file} → {request.output_file}")
-        # Fake success response
-        return energy_pipeline_pb2.ExecuteResponse(
-            success=True,
-            message=f"Dummy processed {request.input_file} to {request.output_file}"
+        start = time.perf_counter()
+        log.info(
+            "execute_request",
+            extra={"status": "start", "input_file": request.input_file, "output_file": request.output_file},
         )
+        msg = f"Dummy processed {request.input_file} to {request.output_file}"
+        duration_ms = int((time.perf_counter() - start) * 1000)
+        log.info("execute_response", extra={"status": "success", "duration_ms": duration_ms})
+        return energy_pipeline_pb2.ExecuteResponse(success=True, message=msg)
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
-    energy_pipeline_pb2_grpc.add_ContainerExecutorServicer_to_server(DummyExecutorServicer(), server)
-    server.add_insecure_port('[::]:50051')
+
+def serve() -> None:
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    energy_pipeline_pb2_grpc.add_ContainerExecutorServicer_to_server(DummyExecutor(), server)
+    server.add_insecure_port("[::]:50051")
+    log.info("server_start", extra={"status": "start"})
     server.start()
-    print("[DUMMY SERVER] gRPC server running on port 50051")
-    try:
-        while True:
-            time.sleep(86400)
-    except KeyboardInterrupt:
-        print("[DUMMY SERVER] Shutting down")
-        server.stop(0)
+    server.wait_for_termination()
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+
+if __name__ == "__main__":
     serve()

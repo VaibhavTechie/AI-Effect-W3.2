@@ -1,29 +1,12 @@
-{
-  "workflow_name": "energy_data_pipeline",
+﻿{
   "containers": [
     {
-      "id": "energy-generator",
-      "name": "Energy Data Generator",
-      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-generator",
-      "input_file": "energy_data.csv",
-      "output_file": "output1.json",
-      "depends_on": []
+      "id": "step1",
+      "command": "docker run --rm alpine sh -c \"echo hello > /data/hello.txt\""
     },
     {
-      "id": "energy-analyzer",
-      "name": "Energy Data Analyzer",
-      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-analyzer",
-      "input_file": "output1.json",
-      "output_file": "output2.json",
-      "depends_on": ["energy-generator"]
-    },
-    {
-      "id": "report-generator",
-      "name": "Report Generator",
-      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-report-generator",
-      "input_file": "output2.json",
-      "output_file": "energy_report.csv",
-      "depends_on": ["energy-analyzer"]
+      "id": "step2",
+      "command": "docker run --rm alpine sh -c \"wc -c < /data/hello.txt > /data/len.txt\""
     }
   ]
 }
