@@ -103,3 +103,13 @@ Container 2: Processed 10 records, and Skipped 0 invalid rows
 2025-07-25 16:40:00,086 - INFO - [gRPC] Executing report-generator
 2025-07-25 16:40:00,086 - INFO - report-generator succeeded: Dummy processed /data/output2.json to /data/energy_report.csv
 2025-07-25 16:40:00,086 - INFO - gRPC pipeline completed.
+2025-08-19 10:27:40,754 - ERROR - Unhandled error in orchestrator
+Traceback (most recent call last):
+  File "/Users/legion/Documents/AI-Effect-W3.2/src/orchestrator/grpc_main.py", line 37, in <module>
+    execute_workflow(config["containers"])
+  File "/Users/legion/Documents/AI-Effect-W3.2/src/orchestrator/grpc_executor.py", line 31, in execute_workflow
+    raise ValueError("Missing 'start_node' in config")
+ValueError: Missing 'start_node' in config
+2025-08-19 10:30:13,006 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-19 10:30:13,013 - ERROR - gRPC error for energy-generator: failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (61)
+2025-08-19 10:30:13,013 - WARNING - gRPC pipeline stopped due to an error.

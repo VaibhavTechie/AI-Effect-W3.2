@@ -1,29 +1,33 @@
 {
   "workflow_name": "energy_data_pipeline",
-  "containers": [
-    {
+  "start_node": "energy-generator",
+  "execution_mode": "grpc",
+  "service_registry": {
+    "energy-generator": "localhost:50051",
+    "energy-analyzer": "localhost:50052",
+    "report-generator": "localhost:50053"
+  },
+  "containers": {
+    "energy-generator": {
       "id": "energy-generator",
-      "name": "Energy Data Generator",
-      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-generator",
-      "input_file": "energy_data.csv",
-      "output_file": "output1.json",
-      "depends_on": []
+      "input_file": "/data/energy_data.csv",
+      "output_file": "/data/output1.pb",
+      "next_node": "energy-analyzer",
+      "timeout_seconds": 30
     },
-    {
+    "energy-analyzer": {
       "id": "energy-analyzer",
-      "name": "Energy Data Analyzer",
-      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-analyzer",
-      "input_file": "output1.json",
-      "output_file": "output2.json",
-      "depends_on": ["energy-generator"]
+      "input_file": "/data/output1.pb",
+      "output_file": "/data/output2.pb",
+      "next_node": "report-generator",
+      "timeout_seconds": 60
     },
-    {
+    "report-generator": {
       "id": "report-generator",
-      "name": "Report Generator",
-      "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-report-generator",
-      "input_file": "output2.json",
-      "output_file": "energy_report.csv",
-      "depends_on": ["energy-analyzer"]
+      "input_file": "/data/output2.pb",
+      "output_file": "/data/energy_report.csv",
+      "next_node": null,
+      "timeout_seconds": 30
     }
-  ]
+  }
 }

@@ -8,6 +8,7 @@ import logging
 # Add project root to PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
+
 from config_parser import parse_config
 from grpc_executor import execute_workflow
 
@@ -25,23 +26,23 @@ CONFIG_PATH = "config/energy-pipeline.json"
 
 if __name__ == "__main__":
     try:
-        if not os.path.exists(CONFIG_PATH):
-            logging.error(f"Configuration file not found: {CONFIG_PATH}")
-            print(f"Error: Configuration file not found at {CONFIG_PATH}")
-            sys.exit(1)
-
-        with open(CONFIG_PATH, "r") as f:
-            json.load(f)  # validate it's valid JSON
-
+        # We don't need to manually check for the file or load JSON here,
+        # because our new parse_config function does all of that for us.
+        
         config = parse_config(CONFIG_PATH)
-        execute_workflow(config["containers"])
+        
+        
+        # Pass the entire 'config' object, not just a part of it.
+        execute_workflow(config)
 
     except json.JSONDecodeError as e:
+        
         logging.error(f"Invalid JSON in config file: {e}")
         print("Error: Config file contains invalid JSON.")
         sys.exit(1)
 
     except Exception as e:
         logging.exception("Unhandled error in orchestrator")
-        print(f"Unhandled error: {e}")
+        # Print the specific error message from the exception
+        print(f"An error occurred: {e}")
         sys.exit(1)
