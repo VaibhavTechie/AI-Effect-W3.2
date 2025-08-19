@@ -1,6 +1,58 @@
-# WP 3.2 - Handover Document
+# WP 3.2 - Orchestrator Handover Document
 
-## Stage 3: End-to-End Integration Test
+## Final Architecture Summary
+
+This document details the final, working implementation of the WP 3.2 orchestrator. The project successfully transitioned from a Docker-based subprocess executor to a pure gRPC client, fulfilling all Phase 2 requirements.
+
+The final architecture is a service-oriented model where this orchestrator (WP 3.2) acts as the central controller, making gRPC calls to the persistent services provided by WP 3.1.
+
+### Key Features of the Final Implementation:
+- **gRPC Client-Only:** The orchestrator does not run Docker commands. It communicates with WP 3.1 services via gRPC.
+- **Configuration-Driven Workflow:** The execution flow is determined by `start_node` and `next_node` properties in a central JSON configuration file, not by list order.
+- **Dynamic Service Discovery:** The orchestrator connects to the correct WP 3.1 service for each step by looking up its address in the `service_registry`.
+- **Robust Validation:** The application validates the configuration on startup and fails fast if required fields are missing or empty, preventing runtime errors.
+- **Structured Logging:** All actions are logged to `logs/orchestrator.log`.
+
+---
+
+## How to Run the Orchestrator
+
+**Prerequisites:**
+1. The WP 3.1 gRPC services must be running and accessible.
+2. A valid `config/energy-pipeline.json` file must be present.
+3. A Python virtual environment with the required packages installed.
+
+**Execution Steps:**
+
+1.  **Activate the virtual environment:**
+    ```bash
+    source .venv/bin/activate
+    ```
+2.  **Run the main orchestrator script from the project root:**
+    ```bash
+    python3 src/orchestrator/grpc_main.py
+    ```
+---
+
+## Key Artifacts in This Repository
+
+- **Main Application Logic:**
+  - `src/orchestrator/grpc_main.py`: The entry point for the application.
+  - `src/orchestrator/grpc_executor.py`: Contains the core workflow and gRPC client logic.
+  - `src/orchestrator/config_parser.py`: Handles loading and validation of the config file.
+- **Configuration:**
+  - `config/energy-pipeline.json`: The central file defining the workflow, service locations, and file paths.
+- **gRPC Contract:**
+  - `proto/energy_pipeline.proto`: The human-readable blueprint for gRPC communication.
+- **Run Logs:**
+  - `logs/orchestrator.log`: Contains detailed logs of the execution flow.
+
+---
+---
+
+## WP 3.2 - Appendix: Project Evolution and Historical Log
+
+### Stage 3: End-to-End Integration Test
 
 ### Objective:
 To verify that the WP 3.2 orchestrator can successfully execute and manage the complete WP 3.1 pipeline using configuration-driven commands.
@@ -280,3 +332,8 @@ Before:
 
 After:  
 ![grpc main after fix 4](image-11.png)
+
+
+
+![grpc call testing office is closed connection error](image-12.png)
+

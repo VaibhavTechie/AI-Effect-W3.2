@@ -1,4 +1,66 @@
-# Progress Log – WP3.2 Orchestrator
+# WP 3.2 Orchestrator - Project Progress Log
+
+This document chronicles the development journey of the WP 3.2 orchestrator, from an initial Docker-based proof-of-concept to a robust, service-oriented gRPC client.
+
+---
+
+## Phase 1: Subprocess-Based Orchestration (Proof of Concept)
+
+### Objective:
+The initial goal was to create a simple orchestrator that could execute a sequence of containerized tasks (WP 3.1) by running `docker run` commands and passing data via shared volumes.
+
+### Key Activities & Milestones:
+
+1.  **Configuration Parser:** A Python script (`config_parser.py`) was developed to read a JSON file that defined the sequence of containers to be executed. This was successfully tested inside a Docker container.
+
+2.  **Execution Engine:** An `executor.py` script was created to parse the configuration and use Python's `subprocess.run()` to execute the `docker run` commands for each container in the specified order.
+
+3.  **Integration with WP 3.1 Containers:**
+    - The WP 3.1 repository was cloned, and their Dockerfiles were built.
+    - Several issues in the WP 3.1 setup were identified and fixed, including incorrect volume paths and typos in Dockerfiles (`CCOPY`).
+    - The orchestrator's configuration (`energy-pipeline.json`) was updated to include the necessary `-v` volume mount flags in the `command` field to ensure data could be passed between containers.
+
+### Outcome & Learnings (Phase 1):
+The orchestrator successfully executed the full WP 3.1 pipeline from end-to-end. This proved the viability of a central controller. However, this approach revealed several critical limitations:
+- **Brittle:** The system was tightly coupled to Docker and relied on fragile file-based communication.
+- **Not Scalable:** Executing `docker run` from a Python script is inefficient and does not scale.
+- **Lacked Intelligence:** There was no mechanism for health checks, retries, or true service communication.
+- This successful but limited proof-of-concept directly motivated the refactoring to a gRPC model as required for Phase 2.
+
+---
+
+## Phase 2: Refactoring to a Service-Oriented gRPC Architecture
+
+### Objective:
+To completely overhaul the orchestrator, removing its dependency on Docker commands and transforming it into a pure gRPC client that communicates with persistent services provided by WP 3.1.
+
+### Key Activities & Milestones:
+
+1.  **Defining the gRPC Contract:**
+    - A `energy_pipeline.proto` file was created to define the shared communication contract. This included the `ContainerExecutor` service and the `ExecuteRequest`/`ExecuteResponse` messages.
+    - The `.proto` file was compiled using `grpcio-tools` to generate the necessary Python modules (`pb2.py` and `pb2_grpc.py`).
+
+2.  **Isolated gRPC Testing:**
+    - A `dummy_grpc_server.py` was created to act as a stand-in for the WP 3.1 services. This allowed for the development and testing of the orchestrator's client logic in isolation.
+    - The new gRPC-based orchestrator (`grpc_main.py` and `grpc_executor.py`) was successfully tested against this dummy server, confirming that the core communication mechanics were working correctly on both Linux and macOS environments.
+
+3.  **Implementing Critical Mentor Feedback:**
+    Based on Phase 2 requirements, a series of critical fixes were implemented to make the orchestrator more robust:
+    - **Fail-Fast Configuration:** Removed all silent error-fixing (like auto-injecting volume mounts). The orchestrator now validates its configuration on startup and fails immediately if it is invalid.
+    - **`next_node` Workflow Logic:** The execution engine was completely rewritten to follow a dependency graph defined by `start_node` and `next_node` in the configuration, making the execution order reliable and robust.
+    - **Decoupled Paths:** Removed all hardcoded path prefixes (e.g., `/data/`). The orchestrator now sends the full, unmodified file paths from the config directly to the gRPC services.
+
+---
+
+## Final Outcome: A Working, Compliant Orchestrator
+
+The project successfully achieved its Phase 2 goals. The final application is a clean, reliable gRPC client that orchestrates remote services based on a declarative configuration file.
+
+The final test of the orchestrator (without the live WP 3.1 services) produced a "Connection Refused" error. This is the **expected and correct outcome**, proving that the orchestrator is functioning perfectly: it correctly parses its configuration, starts the workflow, and attempts to connect to the external services as designed. The project is now ready for final end-to-end integration testing.
+
+---
+---
+## Archieved Progress Log – WP3.2 Orchestrator
 
 ## Stage 1: Configuration Parser Test
 

@@ -1,4 +1,73 @@
-# Issue Log – WP3.2 Orchestrator Setup
+# Issue Log – WP 3.2 Orchestrator
+
+## Summary
+This document tracks the key technical challenges encountered and resolved during the development of the WP 3.2 orchestrator. The issues are grouped into three main phases: initial Docker/Subprocess setup, the transition to gRPC, and the final stabilization and code cleanup.
+
+---
+
+## Phase 1: Initial Docker & Subprocess Setup
+
+This phase focused on getting the initial proof-of-concept orchestrator running with Docker Compose and executing WP 3.1 containers via `docker run`.
+
+- **Issue: Docker Environment & Permissions**
+  - **Problem:** `docker-compose: command not found` and `PermissionError` when accessing the Docker socket.
+  - **Resolution:** Installed Docker Compose and added the current user to the `docker` group to grant necessary permissions.
+
+- **Issue: Docker Build Context Errors**
+  - **Problem:** Docker builds failed due to `COPY failed: forbidden path outside the build context`. The Dockerfile was trying to access files outside the directory specified in `docker-compose.yml`.
+  - **Resolution:** Corrected the `build.context` path in `docker-compose.yml` to include the project root, and updated the `COPY` paths in the Dockerfile accordingly.
+
+- **Issue: File Handoff & Volume Mounts**
+  - **Problem:** Containers were failing with `FileNotFoundError` because the input files (e.g., `energy_data.csv`) were not available inside the container's filesystem.
+  - **Resolution:** Updated the orchestrator's configuration (`energy-pipeline.json`) to include the correct `-v /path/to/data:/data` flag in each container's `command` string, ensuring the shared data volume was mounted correctly during execution.
+
+---
+
+## Phase 2: Transition to gRPC Architecture
+
+This phase involved refactoring the orchestrator into a gRPC client and resolving the challenges related to Protobuf compilation and Python imports.
+
+- **Issue: Python `ModuleNotFoundError` for `proto` package**
+  - **Problem:** When running the new gRPC scripts, Python could not find the `proto` module because the project's root directory was not on the Python import path.
+  - **Resolution:** Added a standard Python workaround at the top of the main scripts to prepend the project's root directory to `sys.path`, allowing for clean, absolute imports (e.g., `from proto import ...`).
+
+- **Issue: Protobuf Compilation and Import Errors**
+  - **Problem:** The auto-generated gRPC Python files (`pb2.py` and `pb2_grpc.py`) had incorrect relative imports, causing `ImportError`. Additionally, the initial compilation command placed the files in the wrong directory.
+  - **Resolution:**
+    1.  Corrected the `protoc` compilation command to specify `proto/` as the output directory.
+    2.  Added an `__init__.py` file to the `proto/` directory to mark it as a Python package.
+    3.  Manually adjusted the generated files to use correct relative imports (e.g., `from . import energy_pipeline_pb2`).
+
+- **Issue: Local macOS Environment Setup**
+  - **Problem:** Running the application on a new machine (macOS) revealed several environment-specific issues, including a `Read-only file system` error when creating logs and missing gRPC packages.
+  - **Resolution:**
+    1.  Updated the logging directory to be a relative path (`logs/`) within the project instead of an absolute system path (`/logs`).
+    2.  Updated the config file path to also be a relative path (`config/energy-pipeline.json`).
+    3.  Documented the need to install `grpcio` and `grpcio-tools` from `requirements.txt` in the virtual environment.
+
+---
+
+## Phase 3: Final Stabilization & Code Cleanup
+
+This phase addressed the final bugs found after implementing the core mentor feedback.
+
+- **Issue: `Missing 'start_node' in config`**
+  - **Problem:** The orchestrator was failing on startup. The `grpc_main.py` script was only passing the `containers` dictionary to the `execute_workflow` function, not the entire configuration object.
+  - **Resolution:** Corrected the function call in `grpc_main.py` to pass the full `config` object, giving the executor access to `start_node`, `service_registry`, and `containers`.
+  ![Missing start_node error and fix](image.png)
+
+- **Issue: Virtual Environment Files in Git**
+  - **Problem:** The `.venv` directory was accidentally being tracked by Git.
+  - **Resolution:** Added `.venv/` to the `.gitignore` file and removed the directory from the Git cache using `git rm -r --cached .venv/`.
+
+### Final Outcome
+All known issues have been successfully resolved. The orchestrator is stable, runs on different platforms with a reproducible environment, and correctly implements the required gRPC architecture.
+
+---
+---
+
+
+## Issue Log – WP3.2 Orchestrator Setup
 
 This document tracks all issues encountered during initial Docker setup and orchestration scaffolding for WP3.2.
 
@@ -214,3 +283,7 @@ The gRPC orchestrator now runs fully on macOS:
 - Logs are created in the project folder.
 - Local configuration works outside Docker.
 - Environment reproducible with proper setup instructions.
+
+
+
+![missing start node](image.png)
