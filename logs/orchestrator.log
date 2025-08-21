@@ -113,3 +113,48 @@ ValueError: Missing 'start_node' in config
 2025-08-19 10:30:13,006 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
 2025-08-19 10:30:13,013 - ERROR - gRPC error for energy-generator: failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (61)
 2025-08-19 10:30:13,013 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 13:58:11,793 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 13:58:11,800 - ERROR - gRPC error for energy-generator: Error in service handler!
+2025-08-21 13:58:11,800 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 14:01:40,279 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 14:01:40,287 - ERROR - gRPC error for energy-generator: Method not found!
+2025-08-21 14:01:40,287 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 14:02:01,599 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 14:02:01,603 - ERROR - gRPC error for energy-generator: Method not found!
+2025-08-21 14:02:01,604 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 14:02:13,408 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 14:02:13,413 - ERROR - gRPC error for energy-generator: Method not found!
+2025-08-21 14:02:13,413 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 14:02:58,666 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 14:02:58,674 - ERROR - gRPC error for energy-generator: Method not found!
+2025-08-21 14:02:58,674 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 15:13:05,359 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:13:05,379 - ERROR - energy-generator failed: [Generator] Failed to execute: Cannot save file into a non-existent directory: '/data'
+2025-08-21 15:13:05,379 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 15:15:51,263 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:15:51,280 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:15:51,281 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:15:51,284 - ERROR - energy-analyzer failed: [Analyzer] Failed to execute: Input file not found: /data/output1.pb
+2025-08-21 15:15:51,284 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 15:19:59,067 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:19:59,086 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:19:59,086 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:19:59,089 - ERROR - energy-analyzer failed: [Analyzer] Failed to execute: Input file not found: /data/energy_data.csv
+2025-08-21 15:19:59,089 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 15:21:46,575 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:21:46,588 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:21:46,588 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:21:46,591 - ERROR - energy-analyzer failed: [Analyzer] Failed to execute: Input file not found: /data/energy_data.csv
+2025-08-21 15:21:46,591 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 15:25:10,903 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:25:10,920 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:25:10,920 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:25:10,930 - ERROR - energy-analyzer failed: [Analyzer] Failed to execute: module 'generated.energy_pb2' has no attribute 'ProcessedDataReport'
+2025-08-21 15:25:10,930 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-21 15:26:52,151 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:26:52,163 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:26:52,163 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:26:52,171 - INFO - energy-analyzer succeeded: Successfully analyzed 10 records and saved to /data/analysis_output.pb
+2025-08-21 15:26:52,171 - INFO - [gRPC] Connecting to report-generator at localhost:50053
+2025-08-21 15:26:52,175 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
+2025-08-21 15:26:52,176 - INFO - gRPC pipeline completed successfully.

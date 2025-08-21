@@ -1,0 +1,4 @@
+grpcio
+protobuf>=4.25
+grpcio-health-checking
+pandas

@@ -1,0 +1,39 @@
+# This docker-compose.yaml file lives in the root of the AI-Effect-W3.2 project
+# It is designed to run the salvaged WP 3.1 services with a SHARED volume
+
+name: ai-effect-pipeline-final
+
+services:
+  generator:
+    build:
+      context: ./wp31_services
+      dockerfile: ./docker/energy-generator/Dockerfile
+    ports: ["50051:50051"]
+    volumes:
+      # Mount the shared volume named 'pipeline-data' to /data in the container
+      - pipeline-data:/data
+    restart: unless-stopped
+
+  analyzer:
+    build:
+      context: ./wp31_services
+      dockerfile: ./docker/energy-analyzer/Dockerfile
+    ports: ["50052:50052"]
+    volumes:
+      # Mount the SAME shared volume
+      - pipeline-data:/data
+    restart: unless-stopped
+
+  reporter:
+    build:
+      context: ./wp31_services
+      dockerfile: ./docker/report-generator/Dockerfile
+    ports: ["50053:50053"]
+    volumes:
+      # Mount the SAME shared volume
+      - pipeline-data:/data
+    restart: unless-stopped
+
+# Define the shared volume at the top level
+volumes:
+  pipeline-data:

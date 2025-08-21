@@ -1,5 +1,5 @@
 {
-  "workflow_name": "energy_data_pipeline",
+  "workflow_name": "energy_data_pipeline_corrected",
   "start_node": "energy-generator",
   "execution_mode": "grpc",
   "service_registry": {
@@ -10,21 +10,21 @@
   "containers": {
     "energy-generator": {
       "id": "energy-generator",
-      "input_file": "/data/energy_data.csv",
-      "output_file": "/data/output1.pb",
+      "input_file": "/data/placeholder_input.txt",
+      "output_file": "/data/energy_data.csv",
       "next_node": "energy-analyzer",
       "timeout_seconds": 30
     },
     "energy-analyzer": {
       "id": "energy-analyzer",
-      "input_file": "/data/output1.pb",
-      "output_file": "/data/output2.pb",
+      "input_file": "/data/energy_data.csv",
+      "output_file": "/data/analysis_output.pb",
       "next_node": "report-generator",
       "timeout_seconds": 60
     },
     "report-generator": {
       "id": "report-generator",
-      "input_file": "/data/output2.pb",
+      "input_file": "/data/analysis_output.pb",
       "output_file": "/data/energy_report.csv",
       "next_node": null,
       "timeout_seconds": 30

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+// This service definition is from the MENTOR'S design
+service ContainerExecutor {
+  rpc Execute(ExecuteRequest) returns (ExecuteResponse);
+}
+
+// These request/response messages are from the MENTOR'S design
+message ExecuteRequest {
+  string input_file = 1;
+  string output_file = 2;
+}
+
+message ExecuteResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// These detailed data messages are from the WP 3.1 team's design.
+// We need them for the analyzer and reporter code to work.
+message RawEnergyData {
+  string timestamp = 1;
+  string household_id = 2;
+  string power_consumption = 3;
+  string voltage = 4;
+  string current = 5;
+}
+
+message ProcessedEnergyReport {
+  string timestamp = 1;
+  string household_id = 2;
+  float  power = 3;
+  float  efficiency = 4;
+  string status = 5;
+  bool   anomaly_detected = 6;
+}
+
+message ProcessedDataReport {
+  repeated ProcessedEnergyReport processed = 1;
+  int32 skipped_rows = 2;
+}

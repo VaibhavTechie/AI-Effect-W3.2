@@ -32,7 +32,7 @@ if __name__ == "__main__":
         config = parse_config(CONFIG_PATH)
         
         
-        # Pass the entire 'config' object, not just a part of it.
+        # Passing the entire 'config' object, not just a part of it.
         execute_workflow(config)
 
     except json.JSONDecodeError as e:
