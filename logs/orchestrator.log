@@ -158,3 +158,24 @@ ValueError: Missing 'start_node' in config
 2025-08-21 15:26:52,171 - INFO - [gRPC] Connecting to report-generator at localhost:50053
 2025-08-21 15:26:52,175 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
 2025-08-21 15:26:52,176 - INFO - gRPC pipeline completed successfully.
+2025-08-21 15:42:00,927 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:42:00,945 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:42:00,945 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:42:00,959 - INFO - energy-analyzer succeeded: Successfully analyzed 10 records and saved to /data/analysis_output.pb
+2025-08-21 15:42:00,959 - INFO - [gRPC] Connecting to report-generator at localhost:50053
+2025-08-21 15:42:00,965 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
+2025-08-21 15:42:00,965 - INFO - gRPC pipeline completed successfully.
+2025-08-21 15:42:57,054 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:42:57,068 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:42:57,068 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:42:57,078 - INFO - energy-analyzer succeeded: Successfully analyzed 10 records and saved to /data/analysis_output.pb
+2025-08-21 15:42:57,078 - INFO - [gRPC] Connecting to report-generator at localhost:50053
+2025-08-21 15:42:57,083 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
+2025-08-21 15:42:57,083 - INFO - gRPC pipeline completed successfully.
+2025-08-21 15:46:51,204 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-21 15:46:51,218 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-21 15:46:51,218 - INFO - [gRPC] Connecting to energy-analyzer at localhost:50052
+2025-08-21 15:46:51,228 - INFO - energy-analyzer succeeded: Successfully analyzed 10 records and saved to /data/analysis_output.pb
+2025-08-21 15:46:51,228 - INFO - [gRPC] Connecting to report-generator at localhost:50053
+2025-08-21 15:46:51,233 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
+2025-08-21 15:46:51,233 - INFO - gRPC pipeline completed successfully.
