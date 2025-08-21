@@ -59,416 +59,151 @@ The project successfully achieved its Phase 2 goals. The final application is a 
 The final test of the orchestrator (without the live WP 3.1 services) produced a "Connection Refused" error. This is the **expected and correct outcome**, proving that the orchestrator is functioning perfectly: it correctly parses its configuration, starts the workflow, and attempts to connect to the external services as designed. The project is now ready for final end-to-end integration testing.
 
 ---
----
+
 ## Archieved Progress Log – WP3.2 Orchestrator
 
-## Stage 1: Configuration Parser Test
+### Stage 1: Configuration Parser Test
 
 - Created a test script `test_config_parser.py` in `src/orchestrator/`:
 
-  ```python
-  from config_parser import parse_config
+    from config_parser import parse_config
 
-  if __name__ == "__main__":
-      config = parse_config("/config/energy-pipeline.json")
-      print("Config loaded successfully:")
-      print(config)
-  ```
+    if __name__ == "__main__":
+        config = parse_config("/config/energy-pipeline.json")
+        print("Config loaded successfully:")
+        print(config)
 
-- Mounted `config/energy-pipeline.json` inside the container at `/config/energy-pipeline.json`.
+  Mounted `config/energy-pipeline.json` inside the container at `/config/energy-pipeline.json`.  
+  Ran the test script inside the container:
 
-- Ran the test script inside the container:
+    docker-compose run --rm orchestrator /bin/sh
+    python test_config_parser.py
 
-  ```bash
-  docker-compose run --rm orchestrator /bin/sh
-  python test_config_parser.py
-  ```
+  **Output:**
 
-- Output:
+    WARN ... docker-compose.yml: the attribute `version` is obsolete, it will be ignored
+    # python test_config_parser.py
+    Config loaded successfully:
+    {'workflow_name': 'energy_data_pipeline', 'containers': [...]}  
 
-  ```
-  gun@Legion:~/ai-effect-wp3.2-orchestrator/docker$ docker-compose run --rm orchestrator /bin/sh
-  WARN[0000] /home/gun/ai-effect-wp3.2-orchestrator/docker/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
-  # python test_config_parser.py
-  Config loaded successfully:
-  {'workflow_name': 'energy_data_pipeline', 'containers': [{'id': 'energy-generator', 'name': 'Energy Data Generator', 'command': 'docker run energy-generator', 'input_file': 'energy_data.csv', 'output_file': 'output1.json', 'depends_on': []}, {'id': 'energy-analyzer', 'name': 'Energy Data Analyzer', 'command': 'docker run energy-analyzer', 'input_file': 'output1.json', 'output_file': 'output2.json', 'depends_on': ['energy-generator']}, {'id': 'report-generator', 'name': 'Report Generator', 'command': 'docker run report-generator', 'input_file': 'output2.json', 'output_file': 'energy_report.csv', 'depends_on': ['energy-analyzer']}]}
-  ```
-
-- Result:
-  - Config file parsed successfully
-  - Volumes and config file mounted correctly
-  - Parser ready to integrate into orchestrator
+  **Result:**  
+  - Config file parsed successfully  
+  - Volumes and config file mounted correctly  
+  - Parser ready to integrate into orchestrator  
 
 ---
 
-## Stage 2: Execution Engine Test
+### Stage 2: Execution Engine Test
 
 - Implemented `execute_workflow()` in `executor.py` to execute Docker commands from the workflow config.
 - Updated `main.py` to load config and call the executor.
 - Ran the main orchestrator entry:
 
-  ```bash
-  docker-compose run --rm orchestrator python main.py
-  ```
+    docker-compose run --rm orchestrator python main.py
 
-- Output:
+  **Output:**
 
-  ```
-  WARN[0000] /home/gun/ai-effect-wp3.2-orchestrator/docker/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
-  Running: docker run energy-generator
-  Unable to find image 'energy-generator:latest' locally
-  docker: Error response from daemon: pull access denied for energy-generator, repository does not exist or may require 'docker login'.
-  See 'docker run --help'.
-  Error: Command failed: docker run energy-generator
-  ```
+    WARN ... docker-compose.yml: the attribute `version` is obsolete
+    Running: docker run energy-generator
+    Unable to find image 'energy-generator:latest' locally
+    docker: Error response from daemon: pull access denied...
 
-- Result:
-  - Commands read and executed in defined order
-  - Waits for each container to finish
-  - Basic error handling in place (invalid image names, etc.)
+  **Result:**  
+  - Commands read and executed in defined order  
+  - Waits for each container to finish  
+  - Basic error handling in place  
 
 ---
 
-## Stage 3: Integration with WP3.1 Pipeline
+### Stage 3: Integration with WP3.1 Pipeline
 
 - Cloned the WP3.1 repo:  
-  `https://github.com/AvantiRao/AIEffect-3.1-to-3.2.git`
+  https://github.com/AvantiRao/AIEffect-3.1-to-3.2.git
+- Fixes performed: corrected volume paths, fixed Dockerfile typos (CCOPY), added absolute paths.  
+- Created `energy_data.csv` manually.  
+- Ran full pipeline:
 
-- Fixes performed:
-  - Corrected volume mount paths in `docker-compose.yaml`
-  - Fixed Dockerfile `COPY` path errors and typos (e.g., `CCOPY`)
-  - Updated code in containers to use absolute paths (e.g., `/data/output1.json`) instead of relative
+    docker-compose -f docker-compose.yaml up --build
 
-- Created `energy_data.csv` manually to simulate input (since W3.1 had not supplied it)
-- All output files were stored in the `data/` folder:
-  - `energy_data.csv`
-  - `output1.json`, `output2.json`
-  - `energy_report.csv`
-
----
-
-## Successful Pipeline Execution
-
-- Ran full pipeline with:
-
-  ```bash
-  docker-compose -f docker-compose.yaml up --build
-  ```
-
-- Results:
-  -  `energy-generator`: generated 3 records
-  -  `energy-analyzer`: analyzed and annotated records
-  -  `report-generator`: generated `energy_report.csv`
-  - All containers exited with code `0`
+  **Results:**  
+  - `energy-generator`: generated records  
+  - `energy-analyzer`: analyzed data  
+  - `report-generator`: created `energy_report.csv`  
+  - All containers exited with code 0  
 
 ---
 
-## Next Steps
+### Stage 3 – Orchestrated Pipeline Execution
 
-- Replace `docker run` with `docker-compose run` for more isolated workflow testing
-- Add execution logs (stdout) to file or orchestrator log
-- Begin integration with WP3.2 orchestrator for dynamic execution in Iteration 2
+- Confirmed orchestrator running WP3.1 containers using JSON workflow.  
+- Updated `energy-pipeline.json` with absolute volume mounts.  
+- Verified output by running each container manually:
 
-# WP3.2 Orchestrator – Stage 3 Run Documentation
+    docker run --rm -v "$PWD/data:/data" aieffect-31-to-32-energy-analyzer
+    docker run --rm -v "$PWD/data:/data" aieffect-31-to-32-report-generator
 
-## Summary
-This document records the execution of the full energy pipeline orchestration using the WP3.1 Docker-based microservices and WP3.2 orchestrator.
+- Ran orchestrator:
 
----
+    docker-compose run --rm orchestrator python main.py
 
-## Stage 3 – Orchestrated Pipeline Execution
+- Observed full pipeline execution (Generator → Analyzer → Report).  
 
-### Setup Steps
-1. Copied the generated `energy_data.csv` file into the shared `data/` directory.
-2. Ensured Docker and Docker Compose are installed and running.
-3. Inside the project root (`AIEffect-3.1-to-3.2`), executed:
-   ```bash
-   docker-compose -f docker-compose.yaml up --build
-   ```
+**Outcome:** Confirmed correct orchestration.
 
 ---
 
-### Component Execution Logs
+### Stage 4 – gRPC-Based Orchestrator Setup (Iteration 2)
 
-#### 1. **Energy Generator**
-- Successfully generated 10 rows of mock household energy usage data.
-- Output saved to: `data/energy_data.csv`
-- Sample Entry:
-  ```csv
-  timestamp,household_id,power_consumption,voltage,current
-  2024-01-15T10:30:00Z,H003,2.04,230.12,8.5
-  ```
+- Created `energy_pipeline.proto`: defined `ContainerExecutor` and `Execute` messages.  
+- Compiled `.proto` with `grpcio-tools`.  
+- Created:
+  - `grpc_executor.py` (sends ExecuteRequests)
+  - `grpc_main.py` (entry point)
+  - `dummy_grpc_server.py` (simulates container execution)
 
-#### 2. **Energy Analyzer**
-- Read `energy_data.csv`, calculated efficiency, flagged anomalies.
-- Output saved to: `data/output1.json`
-- Sample JSON Entry:
-  ```json
-  {
-    "timestamp": "2024-01-15T10:30:00Z",
-    "household_id": "H003",
-    "power": 2.04,
-    "efficiency": 0.135,
-    "status": "normal",
-    "anomaly_detected": false
-  }
-  ```
-- All 10 records processed with no invalid rows.
+- Verified imports, fixed issues by adding `__init__.py` to `proto/`.
 
-#### 3. **Report Generator**
-- Took the analyzed JSON and created a final report.
-- Output saved to: `data/energy_report.csv`
+**Test:**  
+Started dummy server:
+
+    python3 src/orchestrator/dummy_grpc_server.py
+    [DUMMY SERVER] gRPC server running on port 50051
+
+Ran orchestrator client:
+
+    python3 src/orchestrator/grpc_main.py
+
+**Output:**  
+- Dummy server processed energy-generator, analyzer, and report-generator.  
+- Confirmed gRPC orchestration worked.
 
 ---
 
-## Issues Encountered
-- Initial Docker builds failed due to incorrect Dockerfile paths.
-- Needed to generate test CSV manually for the pipeline to consume.
-- Resolved permission errors while writing to `data/`.
-- Fixed a typo (`CCOPY`) in Dockerfile which broke image build.
+### Stage 5 – Phase 2 Week 1: Critical Fixes and Stability Improvements
+
+- Mandatory volume mounts validation.  
+- Execution order refactored with `next_node` dependency graph.  
+- Removed `/data/` hardcoding.  
+- Logging improvements in `grpc_main.py`.
+
+**Outcome:** Orchestrator now robust, with clean configuration handling and reliable execution.
 
 ---
 
-## Outcome
-The pipeline executed successfully end-to-end:
-- 10 records flowed through 3 containers.
-- Every output file was generated as intended.
-- Each container ran independently and exited cleanly.
+### Stage 6: Final Integration with Corrected WP3.1 Services
 
----
+**Objective:** Achieve full end-to-end run with WP3.1 services.  
 
-## Files in `/data` after execution
-- `energy_data.csv`
-- `output1.json`
-- `output2.json`
-- `energy_report.csv`
+**Challenges:** WP3.1 services had incorrect `.proto` contract → caused `Method not found!`.  
 
----
+**Resolution:**  
+- Replaced `.proto` with official version.  
+- Re-generated gRPC Python code.  
+- Rewrote `server.py` in all services to implement correct gRPC methods.  
+- Added `pandas` to requirements.  
+- Reconfigured docker-compose for a shared volume.  
 
-## Next Steps
-- Add additional validation logic or exception handling in orchestrator.
-- Automate data generation or allow config-based batch runs.
-- Move on to Iteration 2 as described in mentor docs.
-
----
-
-## Stage 3 – Orchestrator Triggering External Containers
-
-### Objective:
-To verify that the WP3.2 orchestrator can execute and control the WP3.1 containerized services using a JSON-driven workflow.
-
-### Key Fixes Implemented:
-- Manually updated `energy-pipeline.json` to include absolute volume mounts:
-  ```json
-  "command": "docker run -v /home/work/project/AIEffect-3.1-to-3.2/data:/data aieffect-31-to-32-energy-generator"
-  ```
-  - Applied same fix for analyzer and report-generator containers.
-- Verified output file generation by running each container manually:
-  ```bash
-  docker run --rm -v "$PWD/data:/data" aieffect-31-to-32-energy-analyzer
-  docker run --rm -v "$PWD/data:/data" aieffect-31-to-32-report-generator
-  ```
-
-### Final Run from WP3.2 Orchestrator:
-- From `AI-Effect-W3.2/docker/`, executed:
-  ```bash
-  docker-compose run --rm orchestrator python main.py
-  ```
-- Observed full pipeline execution:
-  - Generator → Analyzer → Report
-  - All outputs created correctly in `/data/`
-- Output logs confirmed that all 3 containers executed in order and completed without error.
-
-### Outcome:
-- Confirmed that WP3.2 orchestrator can run WP3.1 containers using volume-mounted files.
-- Pipeline completes from within WP3.2 context, even though containers belong to 3.1.
-- No refactor needed inside container logic; orchestration driven via JSON `command` field.
-
----
-
-## Stage 4 – gRPC-Based Orchestrator Setup (Iteration 2)
-
-### Objective:
-Introduce a parallel orchestrator logic using gRPC to execute containers, without altering the legacy `main.py` logic.
-
-### Setup:
-- Created new `energy_pipeline.proto` definition in `proto/`:
-  ```proto
-  syntax = "proto3";
-
-  service ContainerExecutor {
-    rpc Execute(ExecuteRequest) returns (ExecuteResponse);
-  }
-
-  message ExecuteRequest {
-    string input_file = 1;
-    string output_file = 2;
-  }
-
-  message ExecuteResponse {
-    bool success = 1;
-    string message = 2;
-  }
-  ```
-
-- Compiled `.proto` using `grpcio-tools`:
-  ```bash
-  python3 -m grpc_tools.protoc \
-    --proto_path=proto \
-    --python_out=proto \
-    --grpc_python_out=proto \
-    proto/energy_pipeline.proto
-  ```
-
-- Generated:
-  - `proto/energy_pipeline_pb2.py`
-  - `proto/energy_pipeline_pb2_grpc.py`
-
-### New Files Created:
-- `src/orchestrator/grpc_executor.py`:
-  - Parses container list
-  - Sends `ExecuteRequest` via gRPC
-  - Logs success/failure for each container
-
-- `src/orchestrator/grpc_main.py`:
-  - Alternate entry point to orchestrate using gRPC
-  - Uses same config as legacy orchestrator
-
-- `src/orchestrator/dummy_grpc_server.py`:
-  - Simulates container execution logic
-  - Reads input/output file paths, writes dummy output
-
-### Testing:
-- Resolved import issues caused by generated `pb2` modules:
-  - Added `__init__.py` to `proto/`
-  - Updated imports to use:
-    ```python
-    from proto import energy_pipeline_pb2, energy_pipeline_pb2_grpc
-    ```
-
-- Verified dummy server runs:
-  ```bash
-  python3 src/orchestrator/dummy_grpc_server.py
-  ```
-  Output:
-  ```
-  [DUMMY SERVER] gRPC server running on port 50051
-  ```
-
-- Confirmed all gRPC scripts import successfully and connect to server
-
-### Next Steps:
-- Validate `grpc_main.py` against the running dummy server
-- Gradually adapt WP3.1 container logic to respond to gRPC calls
-- Include this progress in mentor meeting for Iteration 2 review
-
-
-## Stage 4 – gRPC Integration Test on macOS (Cross-System Validation)
-
-### Objective:
-To validate the gRPC orchestrator and dummy server on a clean macOS machine using a virtual environment, outside Docker.
-
-### Setup & Steps:
-
-1. Cloned the `AI-Effect-W3.2` repository on macOS.
-
-2. Created a Python virtual environment and installed required packages:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install grpcio grpcio-tools
-   ```
-
-3. Verified project structure and ensured the following changes:
-   - `proto/` directory has an `__init__.py` file.
-   - All import statements for protobuf files use:
-     ```python
-     from proto import energy_pipeline_pb2, energy_pipeline_pb2_grpc
-     ```
-   - Added `sys.path.insert(0, os.path.abspath(...))` to Python files like `grpc_executor.py` and `dummy_grpc_server.py` to enable clean relative imports across directories.
-
-4. Started the dummy gRPC server:
-   ```bash
-   python3 src/orchestrator/dummy_grpc_server.py
-   ```
-   Output:
-   ```
-   [DUMMY SERVER] gRPC server running on port 50051
-   ```
-
-5. Ran the orchestrator client to test pipeline execution via gRPC:
-   ```bash
-   python3 src/orchestrator/grpc_main.py
-   ```
-   Output:
-   ```
-   [gRPC] Executing energy-generator -> energy_data.csv -> output1.json
-   energy-generator: Dummy processed /data/energy_data.csv to /data/output1.json
-   [gRPC] Executing energy-analyzer -> output1.json -> output2.json
-   energy-analyzer: Dummy processed /data/output1.json to /data/output2.json
-   [gRPC] Executing report-generator -> output2.json -> energy_report.csv
-   report-generator: Dummy processed /data/output2.json to /data/energy_report.csv
-   All containers executed via gRPC.
-   ```
-
-### Outcome:
-- gRPC orchestrator pipeline confirmed working on macOS using virtual environment.
-- Dummy server received and processed all 3 container stages correctly.
-- Imports, protobufs, and execution paths fully resolved outside Docker.
-
-### Next Steps:
-- Begin replacing dummy handler logic with real WP3.1 service implementations.
-- Enable containerized services to register and handle gRPC `ExecuteRequest`.
-- Transition orchestrator from subprocess-based control to gRPC-based orchestration.
-
----
-
-## Stage 5 – Phase 2 Week 1: Critical Fixes and Stability Improvements
-
-### Objective:
-Implement foundational code fixes as outlined by the mentor for improving orchestrator reliability, configuration enforcement, and execution accuracy.
-
-### Fixes Applied:
-
-#### Fix 1: Mandatory Volume Mounts
-
-- Removed auto-injection of `-v` volume mounts in `executor.py`.
-- Added validation to ensure every container command includes explicit volume bindings.
-- Error raised early if missing to enforce clean config and catch misconfigurations.
-
----
-
-#### Fix 2: Execution Order via `next_node`
-
-- Refactored `execute_workflow()` logic in `executor.py` to walk through containers using the `next_node` chain starting from `start_node`.
-- Prevented errors from out-of-order execution and improved fault tolerance.
-- Added cycle detection to catch infinite loops in workflow definitions.
-
----
-
-#### Fix 3: Path Injection Removed in gRPC Requests
-
-- Updated `grpc_executor.py` to no longer hardcode `/data/` prefix.
-- Orchestrator now sends input/output paths directly from config file.
-- This allows gRPC services full flexibility to resolve paths inside their container environment.
-
----
-
-#### Fix 4: Logging and Startup Cleanups in gRPC Entry Point
-
-- Cleaned up `grpc_main.py`:
-  - Added safe logging to `logs/orchestrator.log`.
-  - Ensured missing config paths or invalid files raise early errors.
-  - Removed hardcoded fallback behavior for better debugging.
-
----
-
-### Outcome:
-- All foundational issues identified in Phase 1 have been resolved.
-- Execution flow, logging, and configuration parsing are now robust and production-ready.
-- gRPC orchestration is now cleanly separated from dummy logic and subprocess fallbacks.
-
-### Next Steps:
-- Await real gRPC container services from WP3.1 to replace the dummy server.
-- Prepare orchestrator to dynamically detect and invoke available services.
-- Document integration requirements and prepare test cases for gRPC-connected container pipelines.
+**Final Outcome:**  
+- End-to-end pipeline succeeded.  
+- WP3.2 orchestrator correctly manages WP3.1 services.  
+- All data files generated successfully.  
