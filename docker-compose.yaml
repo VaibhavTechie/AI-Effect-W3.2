@@ -1,7 +1,5 @@
 # FINAL docker-compose.yaml for development and easy file access
 
-name: ai-effect-pipeline-dev
-
 services:
   generator:
     build:
