@@ -20,7 +20,7 @@ def parse_config(path: str) -> Dict[str, Any]:
             print(f"Error: Invalid JSON in configuration file '{path}'. Details: {e}")
             sys.exit(1)
 
-    # --- Start of New Validation Logic ---
+    
 
     # Validate that 'start_node' exists and is a non-empty string
     if "start_node" not in config or not isinstance(config["start_node"], str) or not config["start_node"]:
@@ -42,7 +42,7 @@ def parse_config(path: str) -> Dict[str, Any]:
         print(f"Error: The 'start_node' ID '{start_node_id}' does not exist in the 'containers' dictionary.")
         sys.exit(1)
 
-    # --- End of New Validation Logic ---
+    
 
     print("Configuration parsed and validated successfully.")
     return config

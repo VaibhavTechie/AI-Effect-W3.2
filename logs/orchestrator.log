@@ -179,3 +179,19 @@ ValueError: Missing 'start_node' in config
 2025-08-21 15:46:51,228 - INFO - [gRPC] Connecting to report-generator at localhost:50053
 2025-08-21 15:46:51,233 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
 2025-08-21 15:46:51,233 - INFO - gRPC pipeline completed successfully.
+2025-08-26 23:57:23,576 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-26 23:57:23,583 - ERROR - gRPC error for energy-generator: failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (61)
+2025-08-26 23:57:23,583 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-26 23:58:12,877 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-26 23:58:12,882 - ERROR - gRPC error for energy-generator: failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (61)
+2025-08-26 23:58:12,883 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-27 00:04:10,793 - INFO - [gRPC] Connecting to energy-generator at localhost:50051
+2025-08-27 00:04:10,798 - ERROR - gRPC error for energy-generator: failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (61)
+2025-08-27 00:04:10,798 - WARNING - gRPC pipeline stopped due to an error.
+2025-08-27 00:05:15,056 - INFO - [gRPC] Connecting to energy-generator at 77.237.247.251:50051
+2025-08-27 00:05:15,201 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-27 00:05:15,201 - INFO - [gRPC] Connecting to energy-analyzer at 77.237.247.251:50052
+2025-08-27 00:05:15,409 - INFO - energy-analyzer succeeded: Successfully analyzed 10 records and saved to /data/analysis_output.pb
+2025-08-27 00:05:15,410 - INFO - [gRPC] Connecting to report-generator at 77.237.247.251:50053
+2025-08-27 00:05:15,638 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
+2025-08-27 00:05:15,638 - INFO - gRPC pipeline completed successfully.

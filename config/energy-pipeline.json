@@ -3,9 +3,9 @@
   "start_node": "energy-generator",
   "execution_mode": "grpc",
   "service_registry": {
-    "energy-generator": "localhost:50051",
-    "energy-analyzer": "localhost:50052",
-    "report-generator": "localhost:50053"
+    "energy-generator": "77.237.247.251:50051",
+    "energy-analyzer": "77.237.247.251:50052",
+    "report-generator": "77.237.247.251:50053"
   },
   "containers": {
     "energy-generator": {
