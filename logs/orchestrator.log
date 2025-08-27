@@ -195,3 +195,10 @@ ValueError: Missing 'start_node' in config
 2025-08-27 00:05:15,410 - INFO - [gRPC] Connecting to report-generator at 77.237.247.251:50053
 2025-08-27 00:05:15,638 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
 2025-08-27 00:05:15,638 - INFO - gRPC pipeline completed successfully.
+2025-08-27 11:01:59,720 - INFO - [gRPC] Connecting to energy-generator at 77.237.247.251:50051
+2025-08-27 11:02:00,077 - INFO - energy-generator succeeded: Successfully generated synthetic data to /data/energy_data.csv
+2025-08-27 11:02:00,078 - INFO - [gRPC] Connecting to energy-analyzer at 77.237.247.251:50052
+2025-08-27 11:02:00,453 - INFO - energy-analyzer succeeded: Successfully analyzed 10 records and saved to /data/analysis_output.pb
+2025-08-27 11:02:00,453 - INFO - [gRPC] Connecting to report-generator at 77.237.247.251:50053
+2025-08-27 11:02:00,794 - INFO - report-generator succeeded: Successfully generated report with 10 records to /data/energy_report.csv
+2025-08-27 11:02:00,795 - INFO - gRPC pipeline completed successfully.
